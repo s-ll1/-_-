@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>云医院</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <script type="text/javascript" src="js/jquery-3.5.1.js"></script>
+  <link rel="stylesheet" href="./layui/css/layui.css" media="all">
+</head>
+
+<body class="layui-layout-body">
+  <div class="layui-layout layui-layout-admin">
+    <div class="layui-header box-shadow" style="background-color: white;">
+      <div class="layui-logo" style="background-color: #393D49;color: white;">东软云医院HIS系统</div>
+      <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item">
+          <a href="javascript:;" class="layui-icon layui-icon-username" style="color: black;">
+            root
+          </a>
+          <dl class="layui-nav-child" style="color: black;">
+            <dd><a href="">基本资料</a></dd>
+            <dd><a href="">安全设置</a></dd>
+          </dl>
+        </li>
+        <li class="layui-nav-item"><a href="" class="layui-icon layui-icon-logout" style="color: black;">退出</a></li>
+      </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+    	<div class="layui-side-scroll">
+    		<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+    		<ul class="layui-nav layui-nav-tree" lay-filter="test">
+    			<hr class="layui-bg-green" style="height: 5px;" />
+    			<li class="layui-nav-item">
+    				<a href="main.html">挂号收费</a>
+    				<dl class="layui-nav-child">
+    					<dd><a href="javascript:;">新患者</a></dd>
+    					<dd><a href="javascript:;">旧患者</a></dd>
+    				</dl>
+    			</li>
+    			<li class="layui-nav-item">
+    				<a href="mainYJ.html">医技处置</a>
+    			</li>
+    			<li class="layui-nav-item">
+    				<a href="javascript:;">药房管理</a>
+    				<dl class="layui-nav-child">
+    					<dd><a href="mainYF.html">药房发药</a></dd>
+    					<dd><a href="mainYG.html">管理药品</a></dd>
+    				</dl>
+    			</li>
+    			<li class="layui-nav-item">
+    				<a href="mainKS.html">科室管理</a>
+    			</li>
+    		</ul>
+    	</div>
+    </div>
+
+    <div class="layui-body">
+      <!-- 内容主体区域 -->
+      <hr class="layui-bg-gray" />
+      <div style="padding: 15px;margin-top:16px;">
+        <!-- 右部展示部分 -->
+        <div class="layui-tab" lay-allowClose="true">
+          <ul class="layui-tab-title">
+            <li>药房发药</li>
+            <li class="layui-this">药品管理</li>
+          </ul>
+          <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show" id="m-inventroy-list">
+              <ul class="input-button clearfix">
+                <li><input type="text" name="title" required lay-verify="required" placeholder="请输入药品名称"
+                    autocomplete="off" class="layui-input" id="medName" v-model="searchVal"></li>
+                <li><button class="layui-btn ">&#xe60b; 查询药品</button></li>
+                <li><button class="layui-btn " @click="addMed()">&#xe605; 新增药品</button></li>
+                <li><button id="button1" class="layui-btn ">&#xe65d; 导入药品</button></li>
+              </ul>
+
+              <table class="layui-table">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" name="" title="发呆" lay-skin="primary"></th>
+                    <th>药品编码</th>
+                    <th>药品名称</th>
+                    <th>药品规格</th>
+                    <th>药品单价</th>
+                    <th>药品类型</th>
+                    <th>药品库存量</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tr v-for="(g,index) in list" :key="index">
+                  <td><input type="checkbox" title="复选" lay-skin="primary" :value="index" v-model="checked_lis"></td>
+                  <td>{{g.mid}}</td>
+                  <td>{{g.mname}}</td>
+                  <td>{{g.mspec}}</td>
+                  <td>{{g.mprice}}</td>
+                  <td>{{g.mtype}}</td>
+                  <td>{{g.mstock}}</td>
+                  <td>
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" @click="modifyMed(index)">修改</button>
+                    <button class="layui-btn layui-btn-danger layui-btn-sm" @click="deleteMed(index)">删除</button>
+                  </td>
+                </tr>
+              </table>
+              <!-- <p>{{checked_lis}}</p> -->
+
+              <button class="layui-btn " @click="delBatches()">批量删除</button>
+
+              <div id="test1"></div>
+              <!-- modify -->
+              <div class="layui-row" id="popSearchRoleTestModify" style="display:none;">
+                <div class="layui-col-md11">
+                  <form class="layui-form" lay-filter="formTestFilter2121">
+
+                    <div class="layui-form-item">
+                      <label class="layui-form-label"><i>* </i>药品编码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入标题"
+                          autocomplete="off" class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label"><i>* </i>药品名称</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入标题"
+                          autocomplete="off" class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品规格</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required placeholder="请输入标题" autocomplete="off"
+                          class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品单价</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required placeholder="请输入标题" autocomplete="off"
+                          class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品类型</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required placeholder="请输入标题" autocomplete="off"
+                          class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品存量</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required placeholder="请输入标题" autocomplete="off"
+                          class="layui-input">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- add -->
+              <div class="layui-row" id="popSearchRoleTestadd" style="display:none;">
+                <div class="layui-col-md11">
+                  <form class="layui-form" lay-filter="formTestFilter2121">
+
+                    <div class="layui-form-item">
+                      <label class="layui-form-label"><i>* </i>药品编码</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" placeholder="药品编码--14位"
+                          autocomplete="off" class="layui-input" ref="medCode">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label"><i>* </i>药品名称</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" placeholder="药品名称"
+                          autocomplete="off" class="layui-input" ref="medName">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品规格</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="药品规格" autocomplete="off" class="layui-input"
+                          ref="mdeSpecification">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品单价</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="药品单价--两位小数" autocomplete="off" ref="medPrice"
+                          class="layui-input">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品类型</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="药品类型" autocomplete="off" class="layui-input"
+                          ref="medType">
+                      </div>
+                    </div>
+                    <div class="layui-form-item">
+                      <label class="layui-form-label">药品存量</label>
+                      <div class="layui-input-block">
+                        <input type="text" name="title" placeholder="药品存量" autocomplete="off" class="layui-input"
+                          v-model="medStock">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- vue部分 -->
+  <script src="./layui/layui.all.js"></script>
+  <script src="./layui/lay/modules/layer.js"></script>
+  <script>
+    // 分页
+    layui.use('laypage', function () {
+      var laypage = layui.laypage;
+      //执行一个laypage实例
+      laypage.render({
+        elem: 'test1',
+        count: 100,
+        limit: 10,
+        jump: function (obj, first) {
+
+        }
+      });
+    });
+    // 文件上传
+    layui.use('upload', function () {
+      var upload = layui.upload;
+      //执行实例
+      var uploadInst = upload.render({
+        elem: '#button1', //绑定元素
+        url: '/upload/', //上传接口
+        done: function (res) {
+          alert("上传完毕！！");
+        },
+        error: function () {
+          alert("上传失败！！");
+        }
+      });
+    });
+  </script>
+  <script src="js/vue.js"></script>
+  <script>
+    let v = new Vue({
+      el: "#m-inventroy-list",
+      data: {
+        lis: [],
+        searchVal: '',
+        letter: '',
+        original: false,
+        checked_lis: [],
+        medStock: 'zx'
+      },
+      methods: {
+        //初始化
+        initData: function () {
+          let self = this
+          //访问本地的json文件
+          $.getJSON("json/m-inventroy.json", function (data) {
+            self.lis = data;
+          })
+        },
+        //编辑药品
+        modifyMed: function (Index) {
+          var self = this;
+          layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+              type: 0,
+              area: ['500px', '450px'],
+              title: "编辑药品",
+              content: $("#popSearchRoleTestModify").html(),
+              btn: ['确认', '取消'],
+              success: function (layero, index) { // 弹窗弹出成功的回调
+                var $addForm1 = $('.layui-form')[2]; // 将原本的数据渲染到弹窗中
+                var oInput1 = $addForm1.getElementsByClassName('layui-input');
+                oInput1[0].value = self.lis[Index].mid;
+                oInput1[1].value = self.lis[Index].mname;
+                oInput1[2].value = self.lis[Index].mspec;
+                oInput1[3].value = self.lis[Index].mprice;
+                oInput1[4].value = self.lis[Index].mtype;
+                oInput1[5].value = self.lis[Index].mstock;
+              },
+              yes: function (index, layero) {
+                var $addForm = $('.layui-form')[2]; // 将修改后的数据直接在data中进行修改
+                var oInput = $addForm.getElementsByClassName('layui-input');
+                self.lis[Index].mid = oInput[0].value;
+                self.lis[Index].mname = oInput[1].value;
+                self.lis[Index].mspec = oInput[2].value;
+                self.lis[Index].mprice = oInput[3].value;
+                self.lis[Index].mtype = oInput[4].value;
+                self.lis[Index].mstock = oInput[5].value;
+                layer.close(index);
+              }
+            })
+          })
+        },
+        // 删除药品
+        deleteMed: function (Index) {
+          let self = this;
+          layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.confirm('确认删除“ ' + self.lis[Index].mname + ' ”', {
+              icon: 3,
+              title: '提示'
+            }, function () {
+              self.lis.splice(Index, 1);
+              layer.closeAll('dialog');
+            })
+          })
+        },
+        // 新增药品
+        addMed() {
+          var self = this;
+          layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.open({
+              type: 0,
+              area: ['500px', '450px'],
+              title: "新增药品",
+              content: $("#popSearchRoleTestadd").html(),
+              yes: function (index, layero) { // 获取弹窗中的数据，push到lis数组中
+                var $addForm = $('.layui-form')[2];
+                var oInput = $addForm.getElementsByClassName('layui-input');
+                var obj = {};
+                obj.mid = oInput[0].value;
+                obj.mname = oInput[1].value;
+                obj.mspec = oInput[2].value;
+                obj.mprice = oInput[3].value;
+                obj.mtype = oInput[4].value;
+                obj.mstock = oInput[5].value;
+                self.lis.push(obj);
+                layer.close(index);
+              }
+            })
+          })
+        },
+        orderFn(letter, original) {
+          this.letter = letter; //排序字段 price or sales
+          this.original = original; //排序方式 up or down
+        },
+        // 批量删除
+        delBatches() {
+          let self = this;
+          let name = '"';
+          for (let i = 0; i < this.checked_lis.length; i++) {
+            if (i == this.checked_lis.length - 1) {
+              name += this.lis[this.checked_lis[i]].mname + '"';
+            } else {
+              name += this.lis[this.checked_lis[i]].mname + '", "';
+            }
+          }
+          layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.confirm('确认删除 ' + name + ' ', {
+              icon: 3,
+              title: '提示'
+            }, function () {
+              let counter = 0;
+              for (let i = 0; i < self.checked_lis.length; i++) {
+                self.lis.splice(self.checked_lis[i] - counter, 1);
+                counter++;
+              }
+              self.checked_lis = [];
+              layer.closeAll('dialog');
+            })
+          })
+        }
+      },
+
+      created: function () {
+        //窗体加载后执行自动执行的代码块
+        this.initData()
+      },
+      computed: {
+        list: function () {
+          var _this = this;
+          var arrByZM = []; //声明一个空数组来存放数据
+          for (let i = 0; i < this.lis.length; i++) {     //过滤不符合条件的数据
+            if (this.lis[i].mname.search(this.searchVal) != -1) {
+              arrByZM.push(this.lis[i]);
+            }
+          }
+
+          //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
+          //判断，如果要letter不为空，说明要进行排序
+          if (this.letter != '') {
+            arrByZM.sort(function (a, b) {
+              if (_this.original) {
+                return b[_this.letter] - a[_this.letter];
+              } else {
+                return a[_this.letter] - b[_this.letter];
+              }
+            });
+          }
+          return arrByZM;
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

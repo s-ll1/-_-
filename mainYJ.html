@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>云医院</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="css/main.css" />
+		<script src="js/jquery-3.5.1.min.js"></script>
+	</head>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header box-shadow" style="background-color: white;">
+				<div class="layui-logo" style="background-color: #393D49;color: white;">东软云医院HIS系统</div>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;" class="layui-icon layui-icon-username" style="color: black;">
+							root
+						</a>
+						<dl class="layui-nav-child" style="color: black;">
+							<dd><a href="">基本资料</a></dd>
+							<dd><a href="">安全设置</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item"><a href="" class="layui-icon layui-icon-logout" style="color: black;">退出</a></li>
+				</ul>
+			</div>
+
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+					<ul class="layui-nav layui-nav-tree" lay-filter="test">
+						<hr class="layui-bg-green" style="height: 5px;" />
+						<li class="layui-nav-item">
+							<a href="main.html">挂号收费</a>
+							<dl class="layui-nav-child">
+								<dd><a href="javascript:;">新患者</a></dd>
+								<dd><a href="javascript:;">旧患者</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a href="mainYJ.html">医技处置</a>
+						</li>
+						<li class="layui-nav-item">
+							<a href="javascript:;">药房管理</a>
+							<dl class="layui-nav-child">
+								<dd><a href="mainYF.html">药房发药</a></dd>
+								<dd><a href="mainYG.html">管理药品</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a href="mainKS.html">科室管理</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!--内容主体区域-->
+			<div class="layui-body">
+				<hr class="layui-bg-gray" />
+				<!--内容背景：灰色-->
+				<div id="box" class="layui-bg-gray" style="padding: 15px;margin-top:16px;" >
+					
+					<!--搜索病历号部分-->
+					<div>
+						<div class="layui-inline">
+							<input type="text" ref="pid" name="pid" required lay-verify="required" placeholder="请输入病历号" class="layui-input">
+						</div>
+						<div class="layui-inline">
+							<button class="layui-btn" @click="searchPid()">确认</button>
+						</div> 
+					</div>
+					<b v-show="isShow1">&nbsp患者信息已找到！</b>
+					<b v-show="isShow2">&nbsp患者信息未找到！</b>
+									
+					<!--显示患者信息部分-->
+					<div v-show="isShow1" style="margin-top:30px;" class="layui-card">
+						<div class="layui-card-header">患者信息</div>
+						<div class="layui-card-body">
+							<table class="layui-table">
+								<tr>
+									<td>姓名：{{now_name}}</td>
+									<td>出生日期：{{now_date}}</td>
+									<td>就诊科室：{{now_office}}</td>
+								</tr>
+								<tr>
+									<td>性别：{{now_sex}}</td>
+									<td>电话号码：{{now_phonenum}}</td>
+									<td>就诊医生：{{now_doctor}}</td>
+								</tr>
+							</table> 
+						</div>
+					</div>
+					
+					<!--查找药品信息部分-->
+					<div v-show="isShow1" style="margin-top:30px;" class="layui-card">
+						<div class="layui-card-header">添加药品</div>
+						<div class="layui-card-body">
+							<input ref="medicine" type="text" list="dlist" class="layui-input" placeholder="请输入药品名称 " />
+							<datalist id="dlist">
+								<option v-for="li in lis_inventory">{{li.mname}}</option>
+							</datalist>
+							<button type="button" class="layui-btn" style="width: 100%;" @click="addMedicine()">
+								<i class="layui-icon">&#xe608;</i> 添加
+							</button>
+						</div>
+					</div>
+					
+					<!--已开药表格部分-->
+					<div v-show="isShow1" style="margin-top:30px;" class="layui-card">
+						<div class="layui-card-header">已选药品</div>
+						<div class="layui-card-body">
+						    <table class="layui-table">
+								<theads>
+									<tr>
+										<th>药品序号</th>
+										<th>药品编码</th>
+										<th>药品名称</th>
+										<th>药品规格</th>
+										<th>药品单价</th>
+										<th>药品类型</th>
+										<th style="width: 18%">药品数量</th>
+										<th style="width: 10%">删除药品</th>
+									</tr>
+								</thead>
+								<tr v-for="(am,index) in addMed">
+									<td>{{am.index}}</td>
+									<td>{{am.mid}}</td>
+									<td>{{am.mname}}</td>
+									<td>{{am.mspec}}</td>
+									<td>{{am.mprice}}</td>
+									<td>{{am.mtype}}</td>
+									<td>
+										<div class="layui-inline">
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" @click="am.mnum<10?am.mnum +=1 :am.mnum">
+												<i class="layui-icon">&#xe624;</i>
+											</button>
+										</div>
+										<div class="layui-inline">
+											<input readonly="readonly" v-model="am.mnum" type="text" class="layui-input" style="width: 100px" />
+										</div>
+										<div class="layui-inline">
+											<button type="button" class="layui-btn layui-btn-sm layui-btn-primary" @click="am.mnum>1?am.mnum -=1 :am.mnum">
+												<i class="layui-icon">&#xe67e;</i>
+											</button>
+										</div>
+									</td>
+									<td>
+										<button type="button" class="layui-btn" style="width: 60px;" @click="deleteMedicine(index)">
+											<i class="layui-icon">&#xe640;</i>
+										</button>
+									</td>
+								</tr>
+						    </table>
+							<button type="button" class="layui-btn" style="margin-left: 45%;" @click="confirmList()">确定</button>
+						 </div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<script src="layui/layui.js"></script>
+		<script>
+			//JavaScript代码区域
+			layui.use('element', function() {
+				var element = layui.element;
+				//一些事件监听
+				element.on('nav(test)', function(elem) {
+					console.log(elem); //得到当前点击的DOM对象
+					if (elem.context.innerHTML == "挂号收费") {
+						console.log(elem.context.innerHTML);
+					}
+				});
+			});
+		</script>
+	</body>
+	
+	<script src="js/vue.min.js"></script>
+	<script>
+		//开启vue部分
+		let v=new Vue({
+			el:"#box",
+			data:{
+		
+				isShow1:false, //成功检索到pid
+				isShow2:false, //未检索到pid
+				
+				lis_record:[], //患者挂号的json
+				lis_inventory:[] ,//药品信息的json
+				
+				//患者信息
+				now_pid:-1,
+				now_name:"",
+				now_phonenum:"",
+				now_sex:"",
+				now_date:"",
+				now_office:"",
+				now_doctor:"",
+				
+				index:0,
+				addMed:[],//新增药品信息
+				
+				medList:[] //药品列表
+			},
+			methods:{
+				//初始化json文件
+				initData:function(){
+					let self = this
+					//访问本地的json文件
+					$.getJSON("json/m-inventroy.json",function(data){
+			             self.lis_inventory = data
+					})
+					$.getJSON("json/m-record.json",function(data){
+						  self.lis_record = data
+					})
+				},
+				//查找患者信息
+				searchPid:function(){
+					this.isShow1 = false
+					this.isShow2 = false
+					let newpid = this.$refs.pid.value
+					//患者信息已找到
+					for(let i in this.lis_record){
+						let rpid=this.lis_record[i].pid
+						if(rpid == newpid){
+							//供展示
+							this.isShow1=true
+							//存储信息
+							this.now_pid=rpid
+							this.now_name=this.lis_record[i].name
+							this.now_phonenum=this.lis_record[i].phonenumber
+							this.now_sex=this.lis_record[i].sex
+							this.now_date=this.lis_record[i].date
+							this.now_office=this.lis_record[i].office
+							this.now_doctor=this.lis_record[i].doctor
+						}
+					}
+					//患者信息未找到
+					if(this.isShow1){
+						this.isShow2=false
+					}else{
+						this.isShow2=true
+					}
+				},
+				//添加药品
+				addMedicine:function(){
+					let nowmedicine = this.$refs.medicine.value
+					for(let li in this.lis_inventory){
+						let nowname=this.lis_inventory[li].mname
+						if(nowname==nowmedicine){
+							this.index = this.index + 1
+							let newMed = {"index":this.index,"mid":this.lis_inventory[li].mid,
+										  "mname":this.lis_inventory[li].mname,"mspec":this.lis_inventory[li].mspec,
+										  "mprice":this.lis_inventory[li].mprice,"mtype":this.lis_inventory[li].mtype,"mnum":1}
+							this.addMed.push(newMed)
+						}
+					}
+					
+				},
+				//删除药品
+				deleteMedicine:function(i){
+					//根据索引，删除数组元素
+					let r=confirm("您确定要删除吗?")
+					if(r){
+						this.addMed.splice(i,1)
+					}
+					let newindex = 1
+					for(let am in this.addMed){
+						this.addMed[am].index=newindex
+						newindex += 1
+					}
+				},
+				//确认药单
+				confirmList:function(){
+					for(let am in this.addMed){
+						let rpid=this.$refs.pid.value
+						let ml = {"pid":rpid,"mid":this.addMed[am].mid,"mnum":this.addMed[am].mnum}
+						this.medList.push(ml)
+						window.console.log(this.medList)
+					}
+				}
+				
+			},
+			created:function(){
+				//窗体加载后执行自动执行的代码块
+				this.initData()
+			}
+		})
+	</script>
+</html>
